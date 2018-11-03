@@ -37,12 +37,22 @@ class TestTitleBasicModel(TestCase):
             willow.save()
 
     def test_allow_blank_fields(self):
+        willow = TitleBasic(primary_title="Willow", tconst='tt0096446', title_type='MOVIE')
+        willow.save()
+        self.assertEqual(TitleBasic.objects.count(), 2)
+
+    def test_successfully_add_new_movie(self):
         willow = TitleBasic(
-            primary_title="Willow", tconst='tt0096446', original_title='', title_type='MOVIE',
-            is_adult=False, start_year=None, end_year=None, runtime_minutes=0
+            primary_title="Willow", tconst='tt0096446', original_title='Willow', title_type='MOVIE',
+            is_adult=False, start_year=1988, end_year=1988, runtime_minutes=126
         )
         willow.save()
         self.assertEqual(TitleBasic.objects.count(), 2)
+
+    def test_validate_movie_data(self):
+        self.assertEqual(self.movie.start_year, 2012)
+        self.assertEqual(self.movie.end_year, 2012)
+        self.assertEqual(self.movie.runtime_minutes, 165)
 
 
 class TestTitleRatingModel(TestCase):
@@ -60,4 +70,26 @@ class TestTitleRatingModel(TestCase):
 
     def test_ratings_representation(self):
         self.assertEqual("Django Unchained: {}/10".format(self.ratings.average_rating), str(self.ratings))
+
+    def test_must_have_tconst(self):
+        rating = TitleRating()
+        with self.assertRaises(IntegrityError):
+            rating.save()
+
+    def test_no_duplicate_tconst(self):
+        rating = TitleRating(tconst=self.movie)
+        rating.save()
+        self.assertEqual(TitleRating.objects.count(), 1)
+
+    def test_validate_values(self):
         self.assertEqual(self.ratings.average_rating, 8.4)
+        self.assertEqual(self.ratings.num_votes, 1159329)
+
+    def test_must_use_object_tconst(self):
+        willow = TitleBasic(
+            primary_title="Willow", tconst='tt0096446', original_title='Willow', title_type='MOVIE',
+            is_adult=False, start_year=1988, end_year=1988, runtime_minutes=126
+        )
+        willow.save()
+        with self.assertRaises(ValueError):
+            TitleRating(tconst='tt0096446')
