@@ -1,7 +1,7 @@
 from django.db import models
 
 
-class Movie(models.Model):
+class TitleBasics(models.Model):
     TITLE_TYPES = (
         ('MOVIE', 'Movie'),
         ('SHORT', 'Short'),
@@ -18,7 +18,7 @@ class Movie(models.Model):
     start_year = models.IntegerField(null=True, blank=True, default=None, db_column='startYear')
     end_year = models.IntegerField(null=True, blank=True, default=None, db_column='endYear')
     runtime_minutes = models.IntegerField(null=False, default=0, db_column='runtimeMinutes')
-    # TODO: add genres here (foreign key)
+    # TODO: add genres here (foreign key) or many-to-many
 
     def __str__(self):
         return self.primary_title
