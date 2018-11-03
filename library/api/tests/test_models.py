@@ -2,6 +2,7 @@
 
 from django.db import IntegrityError
 from django.test import TestCase
+from django.core.exceptions import ValidationError
 
 from ..models import TitleBasic, TitleRating, TitleEpiside, NameBasic, Profession
 
@@ -139,6 +140,9 @@ class TestNameBasicModel(TestCase):
 
     def test_person_created(self):
         self.assertEqual(NameBasic.objects.count(), 1)
+
+    def test_name_representation(self):
+        self.assertEqual("Skeet Ulrich (1970-)", str(self.person))
 
     def test_primary_professions(self):
         self.assertEqual(self.person.primary_professions, '1,2,3')

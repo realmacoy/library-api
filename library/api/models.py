@@ -62,7 +62,8 @@ class NameBasic(models.Model):
 
     def __str__(self):
         death = ''
-        if self.death_year is not None: death = self.death_year
+        if self.death_year is not None:
+            death = self.death_year
         return self.primary_name + " ({}-{})".format(self.birth_year, death)
 
 
