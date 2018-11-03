@@ -25,9 +25,28 @@ class TitleBasic(models.Model):
 
 
 class TitleRating(models.Model):
-    tconst = models.OneToOneField(TitleBasic, on_delete=models.CASCADE, primary_key=True, null=False, blank=False)
+    tconst = models.OneToOneField(
+        TitleBasic, on_delete=models.CASCADE, primary_key=True,
+        null=False, blank=False, related_name='title_rating_tconst'
+    )
     average_rating = models.DecimalField(max_digits=2, decimal_places=1, default=0.0, db_column='averageRating')
     num_votes = models.PositiveIntegerField(default=0, db_column='numVotes')
 
     def __str__(self):
         return "{}: {}/10".format(self.tconst, self.average_rating)
+
+
+class TitleEpiside(models.Model):
+    tconst = models.OneToOneField(
+        TitleBasic, on_delete=models.CASCADE, primary_key=True,
+        null=False, blank=False, related_name='title_episode_tconst'
+    )
+    parent_tconst = models.OneToOneField(
+        TitleBasic, on_delete=models.CASCADE, null=False, blank=False,
+        db_column='parentTconst', related_name='title_episode_parent_tconst'
+    )
+    season_number = models.SmallIntegerField(db_column='seasonNumber', default=0)
+    episode_number = models.SmallIntegerField(db_column='episodeNumber', default=0)
+
+    def __str__(self):
+        return "{} - S{}E{}".format(self.parent_tconst, self.season_number, self.episode_number)

@@ -3,7 +3,7 @@
 from django.db import IntegrityError
 from django.test import TestCase
 
-from ..models import TitleBasic, TitleRating
+from ..models import TitleBasic, TitleRating, TitleEpiside
 
 
 class TestTitleBasicModel(TestCase):
@@ -93,3 +93,30 @@ class TestTitleRatingModel(TestCase):
         willow.save()
         with self.assertRaises(ValueError):
             TitleRating(tconst='tt0096446')
+
+
+class TestTitleEpisodeModel(TestCase):
+    def setUp(self):
+        self.show = TitleBasic(
+            tconst='tt0805663', primary_title='Jericho', original_title='Jericho', title_type='SERIES',
+            is_adult=False, start_year=2006, end_year=2008, runtime_minutes=45
+        )
+        self.show.save()
+        self.show_episode = TitleBasic(
+            tconst='tt0494730', primary_title='Pilot', original_title='Pilot', title_type='EPISODE',
+            is_adult=False, start_year=2006, runtime_minutes=39
+        )
+        self.show_episode.save()
+        self.episode = TitleEpiside(
+            tconst=self.show_episode, parent_tconst=self.show, season_number=1, episode_number=1
+        )
+        self.episode.save()
+
+    def test_episode_created(self):
+        self.assertEqual(TitleEpiside.objects.count(), 1)
+
+    def test_episode_representation(self):
+        self.assertEqual("Jericho - S1E1", str(self.episode))
+
+    def test_parent_object(self):
+        self.assertEqual(self.episode.parent_tconst, self.show)
