@@ -21,11 +21,12 @@ class TestMovieModel(TestCase):
         self.assertEqual(self.movie.primary_title, str(self.movie))
 
     def test_duplicate_id_not_allowed(self):
-        with self.assertRaises(IntegrityError):
-            Movie.objects.create(
-                primary_title="Willow", tconst='tt1853728', original_title='Willow', title_type='MOVIE',
-                is_adult=False, start_year=1988, end_year=1988, runtime_minutes=126
-            )
+        willow = Movie(
+            primary_title="Willow", tconst='tt1853728', original_title='Willow', title_type='MOVIE',
+            is_adult=False, start_year=1988, end_year=1988, runtime_minutes=126
+        )
+        willow.save()
+        self.assertEqual(Movie.objects.count(), 1)
 
     def test_title_type_cannot_be_null(self):
         willow = Movie(
