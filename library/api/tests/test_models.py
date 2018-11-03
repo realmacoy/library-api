@@ -34,3 +34,11 @@ class TestMovieModel(TestCase):
         )
         with self.assertRaises(IntegrityError):
             willow.save()
+
+    def test_allow_blank_fields(self):
+        willow = Movie(
+            primary_title="Willow", tconst='tt0096446', original_title='', title_type='MOVIE',
+            is_adult=False, start_year=None, end_year=None, runtime_minutes=0
+        )
+        willow.save()
+        self.assertEqual(Movie.objects.count(), 2)
