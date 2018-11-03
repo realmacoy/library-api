@@ -134,9 +134,10 @@ class TestNameBasicModel(TestCase):
         profs = "{},{},{}".format(actor.id, director.id, producer.id)
         self.roles = [actor, director, producer]
         self.person = NameBasic(
-            nconst='nm0000240', primary_name='Skeet Ulrich', birth_year=1970, primary_professions=profs
+            nconst='nm0000240', primary_name='Skeet Ulrich', birth_year=1970
         )
         self.person.save()
+        self.person.primary_professions.add(actor, director, producer)
 
     def test_person_created(self):
         self.assertEqual(NameBasic.objects.count(), 1)
@@ -145,8 +146,6 @@ class TestNameBasicModel(TestCase):
         self.assertEqual("Skeet Ulrich (1970-)", str(self.person))
 
     def test_primary_professions(self):
-        self.assertEqual(self.person.primary_professions, '1,2,3')
-        profs = self.person.primary_professions.split(',')
-        self.assertEqual(Profession.objects.get(role='Actor'), Profession.objects.get(id=profs[0]))
-        self.assertEqual(Profession.objects.get(role='Director'), Profession.objects.get(id=profs[1]))
-        self.assertEqual(Profession.objects.get(role='Producer'), Profession.objects.get(id=profs[2]))
+        profs = list(self.person.primary_professions.all())
+        self.assertEqual(self.roles, profs)
+
