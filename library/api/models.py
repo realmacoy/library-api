@@ -1,7 +1,7 @@
 from django.db import models
 
 
-class TitleBasics(models.Model):
+class TitleBasic(models.Model):
     TITLE_TYPES = (
         ('MOVIE', 'Movie'),
         ('SHORT', 'Short'),
@@ -22,4 +22,13 @@ class TitleBasics(models.Model):
 
     def __str__(self):
         return self.primary_title
+
+
+class TitleRating(models.Model):
+    tconst = models.OneToOneField(TitleBasic, on_delete=models.CASCADE, primary_key=True)
+    average_rating = models.DecimalField(max_digits=2, decimal_places=1, default=0.0, db_column='averageRating')
+    num_votes = models.PositiveIntegerField(default=0, db_column='numVotes')
+
+    def __str__(self):
+        return "{}: {}/10".format(self.tconst, self.average_rating)
 

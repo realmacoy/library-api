@@ -3,33 +3,33 @@
 from django.db import IntegrityError
 from django.test import TestCase
 
-from ..models import TitleBasics
+from ..models import TitleBasic, TitleRating
 
 
-class TestTitleBasicsModel(TestCase):
+class TestTitleBasicModel(TestCase):
     def setUp(self):
-        self.movie = TitleBasics(
+        self.movie = TitleBasic(
             primary_title="Django Unchained", tconst='tt1853728', original_title='Django Unchained', title_type='MOVIE',
             is_adult=False, start_year=2012, end_year=2012, runtime_minutes=165
         )
         self.movie.save()
 
     def test_movie_creation(self):
-        self.assertEqual(TitleBasics.objects.count(), 1)
+        self.assertEqual(TitleBasic.objects.count(), 1)
 
     def test_movie_representation(self):
         self.assertEqual(self.movie.primary_title, str(self.movie))
 
     def test_duplicate_id_not_allowed(self):
-        willow = TitleBasics(
+        willow = TitleBasic(
             primary_title="Willow", tconst='tt1853728', original_title='Willow', title_type='MOVIE',
             is_adult=False, start_year=1988, end_year=1988, runtime_minutes=126
         )
         willow.save()
-        self.assertEqual(TitleBasics.objects.count(), 1)
+        self.assertEqual(TitleBasic.objects.count(), 1)
 
     def test_title_type_cannot_be_null(self):
-        willow = TitleBasics(
+        willow = TitleBasic(
             primary_title="Willow", tconst='tt0096446', original_title='Willow', title_type=None,
             is_adult=False, start_year=1988, end_year=1988, runtime_minutes=126
         )
@@ -37,9 +37,27 @@ class TestTitleBasicsModel(TestCase):
             willow.save()
 
     def test_allow_blank_fields(self):
-        willow = TitleBasics(
+        willow = TitleBasic(
             primary_title="Willow", tconst='tt0096446', original_title='', title_type='MOVIE',
             is_adult=False, start_year=None, end_year=None, runtime_minutes=0
         )
         willow.save()
-        self.assertEqual(TitleBasics.objects.count(), 2)
+        self.assertEqual(TitleBasic.objects.count(), 2)
+
+
+class TestTitleRatingModel(TestCase):
+    def setUp(self):
+        self.movie = TitleBasic(
+            primary_title="Django Unchained", tconst='tt1853728', original_title='Django Unchained', title_type='MOVIE',
+            is_adult=False, start_year=2012, end_year=2012, runtime_minutes=165
+        )
+        self.movie.save()
+        self.ratings = TitleRating(tconst=self.movie, average_rating=8.4, num_votes=1159329)
+        self.ratings.save()
+
+    def test_ratings_creation(self):
+        self.assertEqual(TitleRating.objects.count(), 1)
+
+    def test_ratings_representation(self):
+        self.assertEqual("Django Unchained: {}/10".format(self.ratings.average_rating), str(self.ratings))
+        self.assertEqual(self.ratings.average_rating, 8.4)
