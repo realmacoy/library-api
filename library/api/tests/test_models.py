@@ -2,7 +2,6 @@
 
 from django.db import IntegrityError
 from django.test import TestCase
-from django.core.exceptions import ValidationError
 
 from ..models import TitleBasic, TitleRating, TitleEpiside, NameBasic, Profession
 
@@ -131,7 +130,6 @@ class TestNameBasicModel(TestCase):
         director.save()
         producer = Profession(role='Producer')
         producer.save()
-        profs = "{},{},{}".format(actor.id, director.id, producer.id)
         self.roles = [actor, director, producer]
         self.person = NameBasic(
             nconst='nm0000240', primary_name='Skeet Ulrich', birth_year=1970
@@ -148,4 +146,3 @@ class TestNameBasicModel(TestCase):
     def test_primary_professions(self):
         profs = list(self.person.primary_professions.all())
         self.assertEqual(self.roles, profs)
-

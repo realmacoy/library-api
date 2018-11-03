@@ -72,3 +72,15 @@ class NameBasic(models.Model):
         if self.death_year is not None:
             death = self.death_year
         return self.primary_name + " ({}-{})".format(self.birth_year, death)
+
+
+class TitleCrew(models.Model):
+    tconst = models.OneToOneField(
+        TitleBasic, on_delete=models.CASCADE, primary_key=True,
+        null=False, blank=False, related_name='title_crew_tconst'
+    )
+    directors = models.ManyToManyField(NameBasic, related_name='directors+')
+    writers = models.ManyToManyField(NameBasic, related_name='writers+')
+
+    def __str__(self):
+        return str(self.tconst)
