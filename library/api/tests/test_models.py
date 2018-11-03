@@ -27,3 +27,10 @@ class TestMovieModel(TestCase):
                 is_adult=False, start_year=1988, end_year=1988, runtime_minutes=126
             )
 
+    def test_title_type_cannot_be_null(self):
+        willow = Movie(
+            primary_title="Willow", tconst='tt0096446', original_title='Willow', title_type=None,
+            is_adult=False, start_year=1988, end_year=1988, runtime_minutes=126
+        )
+        with self.assertRaises(IntegrityError):
+            willow.save()
