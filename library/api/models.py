@@ -50,3 +50,24 @@ class TitleEpiside(models.Model):
 
     def __str__(self):
         return "{} - S{}E{}".format(self.parent_tconst, self.season_number, self.episode_number)
+
+
+class NameBasic(models.Model):
+    nconst = models.CharField(max_length=10, primary_key=True, null=False, blank=False, unique=True)
+    primary_name = models.CharField(max_length=100, blank=False, null=False, db_column='primaryName')
+    birth_year = models.IntegerField(null=True, default=None, db_column='birthYear')
+    death_year = models.IntegerField(null=True, default=None, blank=True, db_column='deathYear')
+    primary_professions = models.CharField(max_length=20, db_column='primaryProfessions', default='', blank=True)
+    # TODO: add known for titles
+
+    def __str__(self):
+        death = ''
+        if self.death_year is not None: death = self.death_year
+        return self.primary_name + " ({}-{})".format(self.birth_year, death)
+
+
+class Profession(models.Model):
+    role = models.CharField(max_length=30, null=False, blank=False, unique=True)
+
+    def __str__(self):
+        return self.role

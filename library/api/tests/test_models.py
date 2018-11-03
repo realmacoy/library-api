@@ -3,7 +3,7 @@
 from django.db import IntegrityError
 from django.test import TestCase
 
-from ..models import TitleBasic, TitleRating, TitleEpiside
+from ..models import TitleBasic, TitleRating, TitleEpiside, NameBasic, Profession
 
 
 class TestTitleBasicModel(TestCase):
@@ -120,3 +120,29 @@ class TestTitleEpisodeModel(TestCase):
 
     def test_parent_object(self):
         self.assertEqual(self.episode.parent_tconst, self.show)
+
+
+class TestNameBasicModel(TestCase):
+    def setUp(self):
+        actor = Profession(role='Actor')
+        actor.save()
+        director = Profession(role='Director')
+        director.save()
+        producer = Profession(role='Producer')
+        producer.save()
+        profs = "{},{},{}".format(actor.id, director.id, producer.id)
+        self.roles = [actor, director, producer]
+        self.person = NameBasic(
+            nconst='nm0000240', primary_name='Skeet Ulrich', birth_year=1970, primary_professions=profs
+        )
+        self.person.save()
+
+    def test_person_created(self):
+        self.assertEqual(NameBasic.objects.count(), 1)
+
+    def test_primary_professions(self):
+        self.assertEqual(self.person.primary_professions, '1,2,3')
+        profs = self.person.primary_professions.split(',')
+        self.assertEqual(Profession.objects.get(role='Actor'), Profession.objects.get(id=profs[0]))
+        self.assertEqual(Profession.objects.get(role='Director'), Profession.objects.get(id=profs[1]))
+        self.assertEqual(Profession.objects.get(role='Producer'), Profession.objects.get(id=profs[2]))
