@@ -3,7 +3,7 @@
 from django.db import IntegrityError
 from django.test import TestCase
 
-from ..models import TitleBasic, TitleRating, TitleEpiside, NameBasic, Profession
+from ..models import TitleBasic, TitleRating, TitleEpiside, NameBasic, Profession, TitleCrew, TitlePrincipals
 
 
 class TestTitleBasicModel(TestCase):
@@ -146,3 +146,69 @@ class TestNameBasicModel(TestCase):
     def test_primary_professions(self):
         profs = list(self.person.primary_professions.all())
         self.assertEqual(self.roles, profs)
+
+
+class TestTitleCrewModel(TestCase):
+    def setUp(self):
+        actor = Profession(role='Actor')
+        actor.save()
+        writer = Profession(role='Writer')
+        writer.save()
+        producer = Profession(role='Producer')
+        producer.save()
+        self.movie = TitleBasic(
+            primary_title="Django Unchained", tconst='tt1853728', original_title='Django Unchained', title_type='MOVIE',
+            is_adult=False, start_year=2012, end_year=2012, runtime_minutes=165
+        )
+        self.movie.save()
+        self.director = NameBasic(nconst='nm0000233', primary_name='Quentin Tarantino', birth_year=1963)
+        self.director.save()
+        self.director.primary_professions.add(writer, actor, producer)
+        self.director.known_for_titles.add(self.movie)
+        self.crew = TitleCrew(tconst=self.movie)
+        self.crew.save()
+        self.crew.directors.add(self.director)
+        self.crew.writers.add(self.director)
+
+    def test_crew_created(self):
+        self.assertEqual(TitleCrew.objects.count(), 1)
+
+    def test_name_representation(self):
+        self.assertEqual(str(self.movie), str(self.crew))
+
+    def test_director_matches(self):
+        self.assertEqual([self.director], list(self.crew.directors.all()))
+
+    def test_writer_matches(self):
+        self.assertEqual([self.director], list(self.crew.writers.all()))
+
+
+class TestTitlePrincipalsModel(TestCase):
+    def setUp(self):
+        self.movie = TitleBasic(
+            primary_title="Django Unchained", tconst='tt1853728', original_title='Django Unchained', title_type='MOVIE',
+            is_adult=False, start_year=2012, end_year=2012, runtime_minutes=165
+        )
+        self.movie.save()
+        director = Profession(role='Director')
+        director.save()
+        self.person = NameBasic(nconst='nm0000233', primary_name='Quentin Tarantino', birth_year=1963)
+        self.person.save()
+        self.person.primary_professions.add(director)
+        self.principal = TitlePrincipals(
+            tconst=self.movie, ordering=5, nconst=self.person, category=director,
+            job=None, characters=None
+        )
+        self.principal.save()
+
+    def test_principal_created(self):
+        self.assertEqual(TitlePrincipals.objects.count(), 1)
+
+    def test_category(self):
+        self.assertEqual(Profession.objects.get(role='Director'), self.principal.category)
+
+    def test_tconst(self):
+        self.assertEqual(self.movie, self.principal.tconst)
+
+    def test_person(self):
+        self.assertEqual(self.person, self.principal.nconst)

@@ -65,7 +65,7 @@ class NameBasic(models.Model):
     birth_year = models.IntegerField(null=True, default=None, db_column='birthYear')
     death_year = models.IntegerField(null=True, default=None, blank=True, db_column='deathYear')
     primary_professions = models.ManyToManyField(Profession)
-    # TODO: add known for titles
+    known_for_titles = models.ManyToManyField(TitleBasic, db_column='knownForTitles')
 
     def __str__(self):
         death = ''
@@ -84,3 +84,18 @@ class TitleCrew(models.Model):
 
     def __str__(self):
         return str(self.tconst)
+
+
+class TitlePrincipals(models.Model):
+    tconst = models.OneToOneField(
+        TitleBasic, on_delete=models.CASCADE,
+        null=False, blank=False, related_name='title_principals_tconst'
+    )
+    ordering = models.IntegerField(default=0, null=False, blank=True)
+    nconst = models.OneToOneField(
+        NameBasic, on_delete=models.SET_NULL, null=True, blank=False,
+        related_name='title_principals_nconst'
+    )
+    category = models.ForeignKey(Profession, on_delete=models.SET_NULL, null=True, blank=True)
+    job = models.CharField(max_length=50, default=None, null=True, blank=True)
+    characters = models.CharField(max_length=255, default=None, null=True, blank=True)
