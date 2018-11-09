@@ -3,7 +3,7 @@
 from django.db import IntegrityError
 from django.test import TestCase
 
-from ..models import TitleBasic, TitleRating, TitleEpiside, NameBasic, Profession, TitleCrew, TitlePrincipals
+from ..models import TitleBasic, TitleRating, TitleEpiside, NameBasic, Profession, TitleCrew, TitlePrincipal
 
 
 class TestTitleBasicModel(TestCase):
@@ -183,7 +183,7 @@ class TestTitleCrewModel(TestCase):
         self.assertEqual([self.director], list(self.crew.writers.all()))
 
 
-class TestTitlePrincipalsModel(TestCase):
+class TestTitlePrincipalModel(TestCase):
     def setUp(self):
         self.movie = TitleBasic(
             primary_title="Django Unchained", tconst='tt1853728', original_title='Django Unchained', title_type='MOVIE',
@@ -195,14 +195,14 @@ class TestTitlePrincipalsModel(TestCase):
         self.person = NameBasic(nconst='nm0000233', primary_name='Quentin Tarantino', birth_year=1963)
         self.person.save()
         self.person.primary_professions.add(director)
-        self.principal = TitlePrincipals(
+        self.principal = TitlePrincipal(
             tconst=self.movie, ordering=5, nconst=self.person, category=director,
             job=None, characters=None
         )
         self.principal.save()
 
     def test_principal_created(self):
-        self.assertEqual(TitlePrincipals.objects.count(), 1)
+        self.assertEqual(TitlePrincipal.objects.count(), 1)
 
     def test_category(self):
         self.assertEqual(Profession.objects.get(role='Director'), self.principal.category)
