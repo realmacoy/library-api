@@ -1,3 +1,11 @@
-from django.shortcuts import render
+from rest_framework.generics import RetrieveAPIView
 
-# Create your views here.
+from .models import TitleBasic
+from .serializers import *
+
+
+class TitleDetailView(RetrieveAPIView):
+    lookup_field = 'tconst'
+    queryset = TitleBasic.objects.all()
+    # serializer_class = TitleBasicSerializer
+    serializer_class = TitleSerializer

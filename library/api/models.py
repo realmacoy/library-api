@@ -88,9 +88,9 @@ class TitleCrew(models.Model):
 
 class TitlePrincipal(models.Model):
     id = models.AutoField(primary_key=True)
-    tconst = models.OneToOneField(
+    tconst = models.ForeignKey(
         TitleBasic, on_delete=models.CASCADE,
-        null=False, blank=False, related_name='title_principals_tconst'
+        null=True, blank=False, related_name='title_principals_tconst'
     )
     ordering = models.IntegerField(default=0, null=False, blank=True)
     nconst = models.OneToOneField(
