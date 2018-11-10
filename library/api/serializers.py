@@ -2,6 +2,12 @@ from rest_framework import serializers
 from .models import *
 
 
+class ProfessionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profession
+        fields = 'role'
+
+
 class TitleBasicSerializer(serializers.ModelSerializer):
     class Meta:
         model = TitleBasic
@@ -13,6 +19,7 @@ class TitleBasicSerializer(serializers.ModelSerializer):
 
 
 class TitlePrincipalSerializer(serializers.ModelSerializer):
+    category = serializers.StringRelatedField()
 
     class Meta:
         model = TitlePrincipal
