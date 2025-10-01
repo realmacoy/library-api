@@ -2,7 +2,7 @@ args==0.1.0
 clint==0.5.1
 coverage==4.5.1
 djangorestframework==3.15.2
-Django==4.2.24
+Django==4.2.25
 gunicorn==23.0.0
 mamba==0.10
 pytz==2018.7
